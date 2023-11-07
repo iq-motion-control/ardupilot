@@ -170,21 +170,7 @@ void AP_MotorsPulsing::output_armed_stabilizing()
 
     throttle_avg_max = constrain_float(throttle_avg_max, throttle_thrust, _throttle_thrust_max);
 
-    float rp_thrust_max = MAX(fabsf(roll_thrust), fabsf(pitch_thrust));
 
-    // calculate how much roll and pitch must be scaled to leave enough range for the minimum yaw
-    if (rp_thrust_max >= 1.0f) {
-        rp_scale = constrain_float(1.0f / rp_thrust_max, 0.0f, 1.0f);
-        if (rp_scale < 1.0f) {
-            limit.roll = true;
-            limit.pitch = true;
-        }
-    }
-
-    if (fabsf(yaw_thrust) > 1.0f) {
-        yaw_thrust = constrain_float(1.0f / yaw_thrust, -1.0f, 1.0f);
-        limit.yaw = true;
-    }
 
 
     // calculate the throttle setting for the lift fan
