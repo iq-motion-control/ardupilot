@@ -12,8 +12,7 @@
 
 //This class defines a helecopter frame that uses pulsing motors
 
-class AP_MotorsPulsing_Heli : public AP_MotorsMulticopter
-{
+class AP_MotorsPulsing_Heli : public AP_MotorsMulticopter {
 public:
     //Create an instance of a Pulsing Heli object
     AP_MotorsPulsing_Heli(AP_AHRS_View  *ahrs_view, uint16_t speed_hz = AP_MOTORS_SPEED_DEFAULT) :
@@ -57,7 +56,6 @@ protected:
     float           _roll_action;
 
     AP_AHRS_View    *_ahrs_view;
-    AP_RPM          *rpm;
 
     AP_Int8         _yaw_dir;
     AP_Float        _rotor_yaw_ff;
