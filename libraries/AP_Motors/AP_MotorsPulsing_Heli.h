@@ -10,39 +10,63 @@
 
 #define AP_MOTORS_COAX_SERVO_INPUT_RANGE    4500
 
-class AP_MotorsPulsing_Coax : public AP_MotorsMulticopter {
+//This class defines a helecopter frame that uses pulsing motors
+
+class AP_MotorsPulsing_Heli : public AP_MotorsMulticopter
+{
 public:
-    AP_MotorsPulsing_Coax(AP_AHRS_View  *ahrs_view, uint16_t speed_hz = AP_MOTORS_SPEED_DEFAULT) :
+    //Create an instance of a Pulsing Heli object
+    AP_MotorsPulsing_Heli(AP_AHRS_View  *ahrs_view, uint16_t speed_hz = AP_MOTORS_SPEED_DEFAULT) :
         AP_MotorsMulticopter(speed_hz), _ahrs_view(ahrs_view)
     {
         AP_Param::setup_object_defaults(this, var_info);
     }
 
+    //Intialize the frame
     void            init(motor_frame_class frame_class, motor_frame_type frame_type) override;
+
+    // set frame class (i.e. quad, hexa, heli) and type (i.e. x, plus)
     void            set_frame_class_and_type(motor_frame_class frame_class, motor_frame_type frame_type) override;
+
+    // set update rate to motors - a value in hertz
     void            set_update_rate( uint16_t speed_hz ) override;
+
+    //Updates the output values to all motors
     virtual void    output_to_motors() override;
+
+    // get_motor_mask - returns a bitmask of which outputs are being used for motors or servos (1 means being used)
+    //  this can be used to ensure other pwm outputs (i.e. for servos) do not conflict
     uint32_t        get_motor_mask() override;
-    bool            arming_checks(size_t buflen, char *buffer) const override { return AP_Motors::arming_checks(buflen, buffer); }
+
+    //Returns whether or not initialization was successful
+    bool            arming_checks(size_t buflen, char *buffer) const override
+    {
+        return AP_Motors::arming_checks(buflen, buffer);
+    }
+
+    //Stores the group information for a pulsing helicopter
     static const struct AP_Param::GroupInfo        var_info[];
 
 protected:
     // output - sends commands to the motors
     void            output_armed_stabilizing() override;
 
-    float           _bottom_thrust;
-    float           _top_thrust;
+    float           _rotor_thrust;
+    float           _tail_thrust;
     float           _pitch_action;
     float           _roll_action;
 
-    uint32_t        _last_update;
-
     AP_AHRS_View    *_ahrs_view;
     AP_RPM          *rpm;
-    
-    AP_Int8         _yaw_dir;
 
-    const char*     _get_frame_string() const override { return "PULSE"; }
+    AP_Int8         _yaw_dir;
+    AP_Float        _rotor_yaw_ff;
+    AP_Float        _gyro_ff_gain;
+
+    const char*     _get_frame_string() const override
+    {
+        return "PULSE";
+    }
 
     // output_test_seq - spin a motor at the pwm value specified
     //  motor_seq is the motor's sequence number from 1 to the number of motors on the frame
